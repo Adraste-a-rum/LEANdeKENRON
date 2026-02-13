@@ -1,0 +1,10 @@
+name = "LEANdeKENRON"
+version = "0.1.0"
+defaultTargets = ["leandekenron"]
+
+[[lean_lib]]
+name = "LEANdeKENRON"
+
+[[lean_exe]]
+name = "leandekenron"
+root = "Main"
