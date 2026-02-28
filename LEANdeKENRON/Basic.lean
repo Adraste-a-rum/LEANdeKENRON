@@ -5,6 +5,8 @@ namespace CategoryTheory
 
 universe v u
 
+/-宣言コマンド(`class`など)の前に`/--hogehoge-/`と書くと注記として利用できる-/
+
 /--Quiver(えびら、箙)。圏から合成と恒等射を忘れたもの（有向グラフ？）-/
 class Quiver (V : Type u) : Type (max u (v+1)) where
   /--射の型（HomSet）-/
@@ -54,7 +56,7 @@ class Category (obj: Type u) : Type max u (v+1) extends CategoryStruct.{v} obj w
   assoc : ∀ {W X Y Z: obj} (f:W⟶X) (g:X⟶Y) (h:Y⟶Z), (f≫g)≫h = f≫(g≫h)
 
 /-
-simp(,grind)にて圏の公理を使えるようにする。
+`simp`(および`grind`)にて圏の公理を使えるようにする。
 mathlibには
 attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 なる記述があるがto_dualは使えないので保留
@@ -80,6 +82,7 @@ structure Functor (C : Type u1) [Category.{v1} C] (D:Type u2) [Category.{v2} D] 
 /--関手記号-/
 scoped infixr:26 " ⥤ " => Functor
 
+/-恒等射・合成の保存公理を`simp`でつかえるようにする-/
 attribute [simp] Functor.map_id Functor.map_comp
 
 namespace Functor
@@ -97,19 +100,20 @@ end
 section
 variable {C:Type u1} [Category.{v1} C] {D:Type u2} [Category.{v2} D] {E:Type u3} [Category.{v3} E]
 
+/--関手の（水平）合成-/
 def comp (F:C⥤D) (G:D⥤E) : C⥤E where
   obj := G.obj∘F.obj --または fun x↦ G.obj (F.obj x)
   map := G.map∘F.map
   map_id := by simp
   map_comp := by simp
-
-
-
 end
+
 end Functor
 
 /--恒等関手の記法：Functorを開かなくてもCategoryTheoryを開けば使える-/
 scoped notation "𝟭" => Functor.id
+
+/--関手の合成の記法：Functorを開かなくてもCategoryTheoryを開けば使える-/
 scoped infixr:80 " ⋙ " => Functor.comp
 
 namespace Functor
