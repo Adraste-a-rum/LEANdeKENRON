@@ -5,7 +5,7 @@ namespace CategoryTheory
 
 universe v u
 
-/-宣言コマンド(`class`など)の前に`/--hogehoge-/`と書くと注記として利用できる-/
+/-宣言コマンド(`class`など)の前に`/--hogehoge-/`と書くとdoc commentとして利用できる-/
 
 /--Quiver(えびら、箙)。圏から合成と恒等射を忘れたもの（有向グラフ？）-/
 class Quiver (V : Type u) : Type (max u (v+1)) where
@@ -36,14 +36,13 @@ class CategoryStruct (obj : Type u ) : Type (max u (v+1)) extends Quiver.{v} obj
 /--恒等者の記号-/
 scoped notation "𝟙" => CategoryStruct.id
 
-/--合成の記号（図式順）-/
+/--ベシ圏などでの合成の書き方。notationを使うことで順番入れ替えができる。-/
+scoped notation g:80 " ⊚ " f:81 => CategoryStruct.comp f g
+
+/--mathlibなどでの合成の記号（図式順）-/
 scoped infixr:80 " ≫ " => CategoryStruct.comp
 
-/--
-ベシ圏などでの合成の書き方。notationを使うことで順番入れ替えができる。
-gを
--/
-scoped notation g:80 " ⊚ " f:81 => CategoryStruct.comp f g
+/- InfoViewでは後に書いた記法が優先されるため、図式順を後に書いている -/
 
 /--圏の定義（公理）-/
 class Category (obj: Type u) : Type max u (v+1) extends CategoryStruct.{v} obj where
@@ -64,8 +63,9 @@ attribute [to_dual existing (attr := simp, grind =) id_comp] Category.comp_id
 attribute [simp, grind _=_] Category.assoc
 attribute [simp] Category.comp_id Category.id_comp
 
-
+/- 宇宙変数の宣言 CategoryTheory空間内でつかえる -/
 universe v1 v2 v3 u1 u2 u3
+
 /--関手-/
 structure Functor (C : Type u1) [Category.{v1} C] (D:Type u2) [Category.{v2} D] :
     Type max v1 v2 u1 u2 where
@@ -85,6 +85,7 @@ scoped infixr:26 " ⥤ " => Functor
 /-恒等射・合成の保存公理を`simp`でつかえるようにする-/
 attribute [simp] Functor.map_id Functor.map_comp
 
+/- F -/
 namespace Functor
 
 section
@@ -118,16 +119,60 @@ scoped infixr:80 " ⋙ " => Functor.comp
 
 namespace Functor
 variable {C:Type u1} [Category.{v1} C] {D:Type u2} [Category.{v2} D] {E:Type u3} [Category.{v3} E]
+
+/--恒等関手の性質：対象について恒等関数-/
 @[simp]
 theorem id_obj (X : C) : (𝟭 C).obj X = X := rfl
+
+/--恒等関手の性質：射について恒等関数-/
 @[simp]
 theorem id_map {X Y : C} (f : X ⟶ Y) : (𝟭 C).map f = f := rfl
+
+/-- 合成関手の性質：射についてはFunctor.mapの合成 -/
 @[simp]
 theorem comp_map (F:C⥤D) (G:D⥤E) {X Y:C} (f:X⟶Y) :
   (F⋙G).map f = G.map (F.map f) := rfl
 
 end Functor
 
+/- ふつう圏論ではC,D,Eは圏なのでそういうふうに変数宣言する -/
+variable {C:Type u1} [Category.{v1} C] {D:Type u2} [Category.{v2} D]
+
+/- ここから alg-d.com/math/kan_extension/kan_extension_short.pdf に従うため圏の対象は`a,b,...`というように置く -/
+
+/-- 自然変換(射の族 {θₐ:Fa→Ga} ) -/
+structure NatTrans (F G: C ⥤ D): Type max u1 v2 where -- max u1 v2とするのは自然変換の定義(Cの対象とDの射がデータなる)から明らか
+  /-- θ.app c でθのc成分を表す -/
+  app (c:C) : F.obj c ⟶ G.obj c
+  /-- 自然性(θₐ₂∘Ff = Gf∘θₐ₁ ) -/
+  naturality ⦃a1 a2:C⦄ (f : a1 ⟶ a2) : F.map f ≫ app a2 = app a1 ≫ G.map f -- `app a2 ≫ F.map f = G.map f ≫ app a1` とすると型エラーが起きるので書き間違えずに済む。LEAN最強！！
+
+-- Mathlibを読むときの方針：to_dualは無視！！
+
+-- この段階ではまだ関手圏を定義できていないため、(θ:F⇒G)のような自然変換を表す記号は導入できない
+
+namespace NatTrans
+
+section
+variable (F G H : C ⥤ D)
+/-- 自然変換の垂直合成-/
+def vcomp (θ:NatTrans F G) (σ : NatTrans G H) : NatTrans F H where
+  app : (c : C) → F.obj c ⟶ H.obj c :=
+    fun c ↦ θ.app c ≫ σ.app c
+  naturality:= by
+    intro a1 a2 f
+    have:= σ.naturality
+    simp
+    rw[←this f]
+    simp[← @Category.assoc]
+    rw[θ.naturality f]
+    done
+end
+
+--第3回の予定：関手圏、水平合成（、"貼り合わせ"Fθ●σG）の導入（、ペースティング定理の証明）
+
+
+end NatTrans
 
 end CategoryTheory
 
