@@ -1,4 +1,4 @@
-import LEANdeKENRON
+-- import LEANdeKENRON
 
-def main : IO Unit :=
-  IO.println s!"Hello, {hello}!"
+-- def main : IO Unit :=
+--   IO.println s!"Hello, {hello}!"
