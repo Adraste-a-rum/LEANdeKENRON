@@ -154,7 +154,7 @@ structure NatTrans (F G: C ⥤ D): Type max u1 v2 where -- max u1 v2とするの
 namespace NatTrans
 
 section
-variable (F G H : C ⥤ D)
+variable {F G H : C ⥤ D}
 /-- 自然変換の垂直合成-/
 def vcomp (θ:NatTrans F G) (σ : NatTrans G H) : NatTrans F H where
   app : (c : C) → F.obj c ⟶ H.obj c :=
@@ -171,8 +171,33 @@ end
 
 --第3回の予定：関手圏、水平合成（、"貼り合わせ"Fθ●σG）の導入（、ペースティング定理の証明）
 
+--第3回
+
+--垂直合成の記号は射の合成の記号を用いるので、さきに関手圏を定義
+
+/--恒等自然変換-/
+protected def id (F : C ⥤ D) : NatTrans F F where
+  app c := 𝟙 (F.obj c)
+  naturality := by simp
 
 end NatTrans
+
+
+instance Functor.category (C:Type u1) (D:Type u2) [Category.{v1} C] [Category.{v2} D] : Category (C ⥤ D) where
+  Hom F G := NatTrans F G
+  id F:= NatTrans.id F
+  comp θ σ := NatTrans.vcomp θ σ
+  id_comp := by simp[NatTrans.id, NatTrans.vcomp]
+  comp_id := by simp[NatTrans.id, NatTrans.vcomp]
+  assoc :=
+    show ∀ {W X Y Z : C ⥤ D}
+            (f : NatTrans W X)
+            (g : NatTrans X Y)
+            (h : NatTrans Y Z),
+              (f.vcomp g).vcomp h = f.vcomp (g.vcomp h)
+    by simp[NatTrans.vcomp]
+
+
 
 end CategoryTheory
 
