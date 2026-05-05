@@ -1,5 +1,15 @@
 {"version": "1.1.0",
  "packagesDir": ".lake/packages",
- "packages": [],
+ "packages":
+ [{"url": "https://github.com/tani/literate-lean.git",
+   "type": "git",
+   "subDir": null,
+   "scope": "",
+   "rev": "5088a7b8092205f8baee0afd970f5e421fb26282",
+   "name": "LiterateLean",
+   "manifestFile": "lake-manifest.json",
+   "inputRev": "main",
+   "inherited": false,
+   "configFile": "lakefile.toml"}],
  "name": "LEANdeKENRON",
  "lakeDir": ".lake"}

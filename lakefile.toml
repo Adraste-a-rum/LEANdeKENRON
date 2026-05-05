@@ -1,10 +1,15 @@
 name = "LEANdeKENRON"
 version = "0.1.0"
-defaultTargets = ["leandekenron"]
+defaultTargets = ["LEANdeKENRON"]
 
 [[lean_lib]]
 name = "LEANdeKENRON"
 
-[[lean_exe]]
-name = "leandekenron"
-root = "Main"
+# [[lean_exe]]
+# name = "leandekenron"
+# root = "Main"
+
+[[require]]
+name = "LiterateLean"
+git = "https://github.com/tani/literate-lean.git"
+rev = "main"

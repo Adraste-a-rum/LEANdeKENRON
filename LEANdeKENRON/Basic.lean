@@ -1,4 +1,9 @@
+import LiterateLean
 
+# LEANdeKENRON - A Literate Formalisation of Category Theory
+
+
+```lean
 namespace my
 
 namespace CategoryTheory
@@ -65,6 +70,12 @@ attribute [simp] Category.comp_id Category.id_comp
 
 /- 宇宙変数の宣言 CategoryTheory空間内でつかえる -/
 universe v1 v2 v3 u1 u2 u3
+```
+
+関手を定義する際は`class`(型クラス)ではなく`structure`(構造体)を用いる
+∵圏はたいてい一つの型につき一インスタンスだが、関手はある圏とある圏の間に複数存在する（関手圏を考えるくらいなので）
+
+```lean
 
 /--関手-/
 structure Functor (C : Type u1) [Category.{v1} C] (D:Type u2) [Category.{v2} D] :
@@ -79,13 +90,15 @@ structure Functor (C : Type u1) [Category.{v1} C] (D:Type u2) [Category.{v2} D] 
   /--合成の保存-/
   map_comp : ∀ {X Y Z:C} (f:X⟶Y) (g:Y⟶Z), map (f≫g) = (map f)≫(map g)
 
+
+
 /--関手記号-/
 scoped infixr:26 " ⥤ " => Functor
 
 /-恒等射・合成の保存公理を`simp`でつかえるようにする-/
 attribute [simp] Functor.map_id Functor.map_comp
 
-/- F -/
+
 namespace Functor
 
 section
@@ -202,3 +215,5 @@ instance Functor.category (C:Type u1) (D:Type u2) [Category.{v1} C] [Category.{v
 end CategoryTheory
 
 end my
+
+```
